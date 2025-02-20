@@ -1,0 +1,3 @@
+environment = "dev"
+
+application  = "test"
