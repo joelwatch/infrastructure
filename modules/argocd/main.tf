@@ -1,50 +1,23 @@
 resource "helm_release" "argocd" {
-  name       = "argocd"
-  repository = "https://argoproj.github.io/argo-helm"
-  chart      = "argo-cd"
-  version    = var.argocd_version
-  namespace  = "argocd"
+  name             = "argocd"
+  repository       = "https://argoproj.github.io/argo-helm"
+  chart            = "argo-cd"
+  version          = var.chart_version
+  namespace        = var.namespace
   create_namespace = true
 
-  set {
-    name  = "server.service.type"
-    value = "LoadBalancer"
-  }
-
-  set {
-    name  = "server.ingress.enabled"
-    value = "true"
-  }
-
-  set {
-    name  = "server.ingress.hosts[0]"
-    value = "argocd.${var.cluster_name}.example.com"
-  }
+  values = [
+    templatefile("${path.module}/values.yaml", {
+      # Pass variables to the template
+      server_service_type = var.server_service_type
+      enable_ingress      = var.enable_ingress
+      ingress_host        = var.ingress_host
+      admin_password      = var.admin_password != "" ? var.admin_password : random_password.argocd.result
+    })
+  ]
 }
 
-# Wait for ArgoCD to be deployed
-resource "time_sleep" "wait_for_argocd" {
-  depends_on = [helm_release.argocd]
-
-  create_duration = "60s"
-}
-
-# Get the ArgoCD admin password
-data "kubernetes_secret" "argocd_admin_password" {
-  depends_on = [time_sleep.wait_for_argocd]
-
-  metadata {
-    name      = "argocd-initial-admin-secret"
-    namespace = "argocd"
-  }
-}
-
-# Get the ArgoCD server service
-data "kubernetes_service" "argocd_server" {
-  depends_on = [time_sleep.wait_for_argocd]
-
-  metadata {
-    name      = "argocd-server"
-    namespace = "argocd"
-  }
+resource "random_password" "argocd" {
+  length  = 16
+  special = false
 }

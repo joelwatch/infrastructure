@@ -1,0 +1,12 @@
+server:
+  service:
+    type: ${server_service_type}
+  
+  ingress:
+    enabled: ${enable_ingress}
+    hosts:
+      - ${ingress_host}
+
+configs:
+  secret:
+    argocdServerAdminPassword: ${admin_password}

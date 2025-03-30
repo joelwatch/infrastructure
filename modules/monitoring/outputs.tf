@@ -1,9 +1,14 @@
 output "loki_endpoint" {
-  description = "Endpoint for Loki"
-  value       = "http://loki.monitoring.svc.cluster.local:3100"
+  description = "Loki endpoint"
+  value       = "http://loki-${helm_release.loki.name}.${var.namespace}.svc.cluster.local:3100"
+}
+
+output "prometheus_endpoint" {
+  description = "Prometheus endpoint"
+  value       = var.enable_prometheus ? "http://prometheus-${helm_release.prometheus[0].name}.${var.namespace}.svc.cluster.local:9090" : null
 }
 
 output "grafana_endpoint" {
-  description = "Endpoint for Grafana (if deployed)"
-  value       = "http://grafana.monitoring.svc.cluster.local:3000"
+  description = "Grafana endpoint"
+  value       = var.enable_prometheus ? "http://grafana.${var.namespace}.svc.cluster.local:3000" : null
 }

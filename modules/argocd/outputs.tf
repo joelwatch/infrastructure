@@ -1,10 +1,10 @@
-output "server_url" {
-  description = "URL of the ArgoCD server"
-  value       = try("http://${data.kubernetes_service.argocd_server.status[0].load_balancer[0].ingress[0].hostname}", "")
+output "admin_password" {
+  description = "ArgoCD admin password"
+  value       = var.admin_password != "" ? var.admin_password : random_password.argocd.result
+  sensitive   = true
 }
 
-output "admin_password" {
-  description = "Initial admin password for ArgoCD"
-  value       = try(data.kubernetes_secret.argocd_admin_password.data.password, "")
-  sensitive   = true
+output "server_url" {
+  description = "ArgoCD server URL"
+  value       = var.enable_ingress ? "https://${var.ingress_host}" : null
 }

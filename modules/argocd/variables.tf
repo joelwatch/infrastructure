@@ -1,32 +1,36 @@
-variable "cluster_name" {
-  description = "Name of the EKS cluster (used for naming resources)"
+variable "namespace" {
   type        = string
+  default     = "argocd"
+  description = "Namespace for ArgoCD installation"
 }
 
-variable "argocd_version" {
-  description = "Version of ArgoCD to deploy"
+variable "chart_version" {
   type        = string
+  default     = "5.46.8"
+  description = "Helm chart version"
 }
 
-variable "github_repo_url" {
-  description = "URL of the GitHub repository containing application manifests"
+variable "server_service_type" {
   type        = string
+  default     = "LoadBalancer"
+  description = "Kubernetes Service type"
 }
 
-variable "github_repo_branch" {
-  description = "Branch of the GitHub repository to use"
-  type        = string
-  default     = "main"
+variable "enable_ingress" {
+  type        = bool
+  default     = false
+  description = "Enable ingress for ArgoCD server"
 }
 
-variable "applications" {
-  description = "List of ArgoCD applications to create"
-  type = list(object({
-    name           = string
-    path           = string
-    repo_url       = string
-    target_revision = string
-    destination_server = string
-  }))
-  default = []
+variable "ingress_host" {
+  type        = string
+  default     = "argocd.example.com"
+  description = "Ingress hostname"
+}
+
+variable "admin_password" {
+  type        = string
+  default     = ""
+  sensitive   = true
+  description = "Admin password (leave empty to auto-generate)"
 }

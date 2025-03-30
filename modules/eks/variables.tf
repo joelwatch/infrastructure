@@ -1,29 +1,59 @@
 variable "cluster_name" {
-  description = "Name of the EKS cluster"
   type        = string
+  description = "Name of the EKS cluster"
 }
 
 variable "cluster_version" {
-  description = "Kubernetes version for the EKS cluster"
   type        = string
-}
-
-variable "vpc_id" {
-  description = "ID of the VPC where the cluster will be deployed"
-  type        = string
+  default     = "1.28"
+  description = "Kubernetes version"
 }
 
 variable "subnet_ids" {
-  description = "List of subnet IDs where the cluster will be deployed"
   type        = list(string)
+  description = "List of subnet IDs for the EKS cluster"
+}
+
+variable "cluster_endpoint_private_access" {
+  type        = bool
+  default     = true
+  description = "Enable private access to the cluster API"
+}
+
+variable "cluster_endpoint_public_access" {
+  type        = bool
+  default     = true
+  description = "Enable public access to the cluster API"
+}
+
+variable "cluster_security_group_ids" {
+  type        = list(string)
+  default     = []
+  description = "Additional security group IDs for the cluster"
+}
+
+variable "cluster_enabled_log_types" {
+  type        = list(string)
+  default     = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
+  description = "List of control plane logs to enable"
+}
+
+variable "tags" {
+  type        = map(string)
+  default     = {}
+  description = "Common tags for all resources"
 }
 
 variable "node_groups" {
-  description = "Configuration for EKS node groups"
   type = map(object({
-    desired_size  = number
-    max_size      = number
-    min_size      = number
-    instance_type = string
+    instance_type   = string
+    desired_size    = number
+    max_size        = number
+    min_size        = number
+    max_unavailable = number
+    capacity_type   = string
+    labels          = map(string)
   }))
+  default     = {}
+  description = "Map of node group configurations"
 }
